@@ -7,6 +7,7 @@
 #include<vector>
 #include<memory>
 #include<optional>
+#include<map>
 
 #include"vec2.h"
 
@@ -17,6 +18,7 @@ using std::shared_ptr;
 using std::make_shared;
 using std::optional;
 using std::nullopt;
+using std::map;
 
 const int SCREEN_WIDTH = 1920;
 const int SCREEN_HEIGHT = 1080;

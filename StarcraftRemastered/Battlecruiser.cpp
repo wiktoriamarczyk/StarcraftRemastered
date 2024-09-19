@@ -3,7 +3,7 @@
 
 class Engine;
 
-static bool CompareFloats(float a, float b)
+static bool AreFloatsEqual(float a, float b)
 {
     return fabs(a - b) < 0.01f;
 }
@@ -25,7 +25,7 @@ void Battlecruiser::Update(float deltaTime)
     Engine::GetSingleton()->DrawLine(directionLine, 2);
 
     m_TargetRotation = (atan2(m_Direction.y, m_Direction.x) * 180.f / PI) + 90.f;
-    if (!CompareFloats(m_TargetRotation, m_CurrentRotation))
+    if (!AreFloatsEqual(m_TargetRotation, m_CurrentRotation))
     {
         RotateToTarget(deltaTime);
         return;
@@ -44,14 +44,35 @@ void Battlecruiser::Update(float deltaTime)
 
 void Battlecruiser::Render(sf::RenderWindow& renderer)
 {
-    shared_ptr<Texture> texture = Engine::GetSingleton()->GetTexture(m_TexturePath);
+    // render correct texture based on rotation
+    float angleStep = 180.f / m_TexturesNames.size();
+    int textureIndex = 0;
+    float angle = m_CurrentRotation;
+    printf("input angle: %f\n", angle);
+    vec2 scale = { 1, 1 };
+    if (angle > 180.f)
+    {
+        int fullRotations = angle / 180.f;
+        printf("full rot: %d\n", fullRotations);
+        angle -= 360.f;
+    }
+    if (angle < 0)
+    {
+        angle = abs(angle);
+        scale = { -1, 1 };
+    }
+    textureIndex = int(angle / angleStep) % m_TexturesNames.size();
+    string textureName = m_TexturePath + m_TexturesNames[textureIndex];
+    shared_ptr<Texture> texture = Engine::GetSingleton()->GetTexture(textureName);
     if (texture)
     {
-        DisplayParameters params;
-        params.Rotation = m_CurrentRotation;
         vec2 position = GetPosition();
-        texture->Display(renderer, position, params);
+        texture->Display(renderer, position, { .DrawScale = scale });
+        // render shadow
+        texture->Display(renderer, position + vec2(0, 50), { .DrawScale = scale, .DrawColor = sf::Color(0, 0, 0, 100) });
     }
+
+    printf("angle: %f\n", angle);
 }
 
 void Battlecruiser::CommandMovement(vec2 position)
@@ -68,15 +89,16 @@ void Battlecruiser::MoveToTarget(float deltaTime)
     m_Direction = m_TargetPosition.value() - m_CurrentPosition;
     vec2 normalizedDirection = m_Direction.GetNormalized();
     vec2 shiftPerFrame = normalizedDirection * m_Speed * deltaTime;
-
+    vec2 finalPosition = {};
     if (shiftPerFrame.GetLength() >= m_Direction.GetLength())
     {
-        SetPosition(m_TargetPosition.value());
+        finalPosition = m_TargetPosition.value();
     }
     else
     {
-        SetPosition(m_CurrentPosition + shiftPerFrame);
+        finalPosition = m_CurrentPosition + shiftPerFrame;
     }
+    SetPosition(finalPosition);
 }
 
 void Battlecruiser::RotateToTarget(float deltaTime)
@@ -86,12 +108,14 @@ void Battlecruiser::RotateToTarget(float deltaTime)
     while (rotationDiff < -180.0f) rotationDiff += 360.0f;
 
     float rotationStep = m_RotationSpeed * deltaTime;
+    float finalRotation = 0;
     if (fabs(rotationDiff) < rotationStep)
     {
-        SetRotation(m_TargetRotation);
+        finalRotation = m_TargetRotation;
     }
     else
     {
-        SetRotation(m_CurrentRotation + rotationStep * (rotationDiff > 0 ? 1 : -1));
+        finalRotation = m_CurrentRotation + rotationStep * (rotationDiff > 0 ? 1 : -1);
     }
+    SetRotation(finalRotation);
 }
