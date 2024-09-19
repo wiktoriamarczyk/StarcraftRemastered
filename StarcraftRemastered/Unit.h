@@ -8,5 +8,5 @@ public:
     virtual bool Initialize()=0;
     virtual void Update(float deltaTime)=0;
     virtual void Render(sf::RenderWindow& renderer)=0;
-    virtual void Move(vec2 position) {};
+    virtual void CommandMovement(vec2 position) {};
 };

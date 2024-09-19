@@ -51,10 +51,14 @@ void Engine::Loop()
         sf::sleep(sf::milliseconds(1000 / 60) - timePassed);
 
         m_Renderer.clear();
-        Render();
         for(auto & unit : m_Units)
         {
             unit->Update(1.0f / m_FramesPerSec);
+        }
+
+        Render();
+        for (auto& unit : m_Units)
+        {
             unit->Render(m_Renderer);
         }
 
@@ -100,7 +104,7 @@ void Engine::OnKeyDown(sf::Keyboard::Key KeyCode)
 // hacky way to test buttlecruiser
 void Engine::OnMouseButtonDown(int Button)
 {
-    m_Units[0]->Move(GetMousePos());
+    m_Units[0]->CommandMovement(GetMousePos());
 }
 
 void Engine::Render()
@@ -108,12 +112,6 @@ void Engine::Render()
     string mapTextureName = "Reference2.png";
     string mapTexturePath = DATA_PATH.string() + mapTextureName;
 
-    sf::Texture texture;
-    texture.loadFromFile(mapTexturePath);
-
-    sf::Sprite sprite;
-    sprite.setTexture(texture);
-    sprite.setPosition(0, 0);
-
-    m_Renderer.draw(sprite);
+    auto mapTexture = GetTexture(mapTexturePath);
+    mapTexture->Display(m_Renderer, vec2(0, 0), {.Pivot = vec2(0,0)});
 }
