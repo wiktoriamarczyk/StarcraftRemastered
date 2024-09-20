@@ -16,8 +16,8 @@ SET(APP_SRC_FILES_LIST
     StarcraftRemastered/Source.cpp
 	StarcraftRemastered/Engine.h
 	StarcraftRemastered/Engine.cpp
-	StarcraftRemastered/BattleCruiser.h
-	StarcraftRemastered/BattleCruiser.cpp
+	StarcraftRemastered/Battlecruiser.h
+	StarcraftRemastered/Battlecruiser.cpp
 	StarcraftRemastered/Common.h
 	StarcraftRemastered/Race.h
 	StarcraftRemastered/Race.cpp
@@ -29,6 +29,8 @@ SET(APP_SRC_FILES_LIST
 	StarcraftRemastered/Unit.h
 	StarcraftRemastered/vec2.cpp
 	StarcraftRemastered/vec2.h
+	StarcraftRemastered/AirUnit.h
+	StarcraftRemastered/AirUnit.cpp
 )
 
 #*****************************************************
